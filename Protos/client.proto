@@ -1,7 +1,11 @@
 syntax = "proto3";
-option csharp_namespace = "GrpcChat.Database.Clients";
 
-service ClientService 
+option csharp_namespace = "PingChatApp.Common.Protos";
+option go_package = "github.com/PingChatApp/Common/out/pb";
+
+package client;
+
+service ClientDataService 
 {
   rpc GetClientByRefId(GetClientByRefIdRequest) returns (ClientResponseDto);
   rpc GetClientByClientId(GetClientByClientIdRequest) returns (ClientResponseDto);

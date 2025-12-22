@@ -1,7 +1,11 @@
 syntax = "proto3";
-option csharp_namespace = "GrpcChat.Database.Roles";
 
-service RoleService 
+option csharp_namespace = "PingChatApp.Common.Protos";
+option go_package = "github.com/PingChatApp/Common/out/pb";
+
+package role;
+
+service RoleDataService 
 {
   rpc GetRoleByRefId(GetRoleByRefIdRequest) returns (RoleDto);
   rpc GetRoleByName(GetRoleByNameRequest) returns (RoleDto);

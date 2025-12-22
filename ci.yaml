@@ -1,0 +1,15 @@
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      # 1. Build .NET Shared Library
+      - name: Build .NET Contracts
+        run: dotnet build ./Common.csproj
+
+      # 2. Generate Go Code from Protobuf
+      - name: Generate Go Protobuf
+        run: |
+          protoc --go_out=./out/pb --go-grpc_out=./out/pb \
+          --proto_path=./Protos ./Protos/*.proto

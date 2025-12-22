@@ -38,5 +38,8 @@ jobs:
     - name: Generate Go Protobuf
       run: |
         mkdir -p ./out/pb
-        protoc --go_out=./out/pb --go-grpc_out=./out/pb \
-        --proto_path=./Protos ./Protos/*.proto
+        protoc \
+          --go_out=./out/pb --go_opt=paths=source_relative \
+          --go-grpc_out=./out/pb --go-grpc_opt=paths=source_relative \
+          --proto_path=./Protos \
+          ./Protos/*.proto

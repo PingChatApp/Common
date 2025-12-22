@@ -10,60 +10,22 @@ on:
 permissions:
   contents: read
   packages: write
-
+  
 jobs:
-  build-and-deploy: # Renamed for clarity
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-
-    # 2. MOVED UP: Setup environments first
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
         source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Setup Go environment
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23' # Explicit version is better
-
-    - name: Setup protoc
-      uses: arduino/setup-protoc@v3
-
-    # 3. INSTALL: Go plugins
-    - name: Install protoc-gen-go and protoc-gen-go-grpc
-      run: |
-        go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-        echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
     
-    # 4. GENERATE: Go code
-    - name: Generate Go Protobuf
+    - name: Build and Pack
       run: |
-        mkdir -p ./out/pb
-        protoc \
-          --go_out=./out/pb --go_opt=paths=source_relative \
-          --go-grpc_out=./out/pb --go-grpc_opt=paths=source_relative \
-          --proto_path=./Protos \
-          ./Protos/*.proto
+        dotnet build ./PingChatApp.Common.csproj --configuration Release
+        dotnet pack ./PingChatApp.Common.csproj --configuration Release --no-build --output ./nupkg
 
-    # 5. BUILD & PACK: .NET
-    - name: Build & Pack NuGet
-      # Combine build and pack into one step for efficiency
-      run: dotnet pack ./PingChatApp.Common.csproj --configuration Release
-
-    # 6. PUSH: To GitHub Packages
     - name: Push to GitHub Packages
-      # Using a more specific path ensures we only push what we just built
       run: dotnet nuget push "bin/Release/*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate
-      
-    # 7. UPLOAD: Artifacts for manual inspection
-    - name: Upload Generated Go Code
-      uses: actions/upload-artifact@v4
-      with:
-        name: ping-go-contracts
-        path: ./out/pb/

@@ -54,7 +54,7 @@ jobs:
     # 5. BUILD & PACK: .NET
     - name: Build & Pack NuGet
       # Combine build and pack into one step for efficiency
-      run: dotnet pack ./Common.csproj --configuration Release
+      run: dotnet pack ./PingChatApp.Common.csproj --configuration Release
 
     # 6. PUSH: To GitHub Packages
     - name: Push to GitHub Packages

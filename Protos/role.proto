@@ -1,51 +1,30 @@
 syntax = "proto3";
 
+package role;
+
 option csharp_namespace = "PingChatApp.Common.Protos";
 option go_package = "github.com/PingChatApp/Common/out/pb";
 
-package role;
-
 service RoleDataService 
 {
-  rpc GetRoleByRefId(GetRoleByRefIdRequest) returns (RoleDto);
-  rpc GetRoleByName(GetRoleByNameRequest) returns (RoleDto);
-  rpc CreateRole(CreateRoleRequest) returns (RoleDto);
-  rpc UpdateRole(UpdateRoleRequest) returns (RoleDto);
-  rpc DeleteRole(DeleteRoleRequest) returns (RoleDto);
+  rpc GetRoleByRefId(GetRoleByRefIdRequest) returns (RoleResponse);
+  rpc GetRoleByName(GetRoleByNameRequest) returns (RoleResponse);
+  rpc CreateRole(CreateRoleRequest) returns (RoleResponse);
+  rpc UpdateRole(UpdateRoleRequest) returns (RoleResponse);
+  rpc DeleteRole(DeleteRoleRequest) returns (RoleResponse);
 }
 
-message GetRoleByRefIdRequest 
-{
-  string referenceId = 1;
-}
+message GetRoleByRefIdRequest { string referenceId = 1; }
+message GetRoleByNameRequest { string name = 1; }
+message CreateRoleRequest { string name = 1; string description = 2; }
+message UpdateRoleRequest { string reference_id = 1; string name = 2; string description = 3; }
+message DeleteRoleRequest { string reference_id = 1; }
 
-message GetRoleByNameRequest 
-{
-  string name = 1;
-}
-
-message CreateRoleRequest 
-{
-  string name = 1;
-  string description = 2;
-}
-
-message UpdateRoleRequest
-{
-  string reference_id = 1;
+message RoleResponse {
+  int32 id = 1;
   string name = 2;
-  string description = 3;
-}
-
-message DeleteRoleRequest
-{
-  string reference_id = 1;
-}
-
-message RoleDto 
-{
-  string id = 1;
-  string name = 2;
-  string description = 3;
-  bool is_active = 4;
+  string reference_id = 3;
+  repeated string claims = 4;
+  bool is_active = 5;
+  string description = 6;
 }

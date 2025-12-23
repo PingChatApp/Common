@@ -1,19 +1,19 @@
 syntax = "proto3";
 
+package auth;
+
+import "Protos/role.proto";
+
 option csharp_namespace = "PingChatApp.Common.Protos";
 option go_package = "github.com/PingChatApp/Common/out/pb";
 
-package auth;
 
 service AuthDataService {
     // client credentials flow
-    rpc GetClient(GetClientRequest) returns (ClientResponse);
     rpc ResolveClientAuthorization(ResolveClientAuthRequest) returns (ResolvedClientAuthorization);
 
     // password flow
-    rpc GetUserByUsername(GetUserRequest) returns (UserResponse);
     rpc ValidateUserCredentials(ValidateUserRequest) returns (ValidateUserResponse);
-    rpc GetUserRoles(GetUserRolesRequest) returns (UserRolesResponse);
     
     // Auth Code flow
     rpc ValidateAuthorizationCode(ValidateAuthCodeRequest) returns (ValidateAuthCodeResponse);
@@ -22,86 +22,38 @@ service AuthDataService {
     rpc ValidateAccessToken(ValidateAccessTokenRequest) returns (ValidateAccessTokenResponse);
 }
 
-message GetClientRequest { string client_id = 1; }
 message ResolveClientAuthRequest { string client_id = 1; }
-message ValidateAuthCodeRequest {
-  string authorization_code = 1;
-  string client_id = 2;
-  string redirect_uri = 3;
-}
-
-message ValidateAuthCodeResponse {
-  bool is_valid = 1;
-  string user_id = 2;
-  repeated string scopes = 3;
-}
-message ValidateAccessTokenRequest {
-  string access_token = 1;
-}
-
-message ValidateAccessTokenResponse {
-  bool is_active = 1;
-  string subject = 2;
-  repeated string scopes = 3;
-  int64 expires_at = 4;
-}
-
-message Scope {
-  string name = 1;
-  string resource = 2;
-}
-
-message ClientResponse {
-  string client_id = 1;
-  string client_secret_hash = 2;
-  bool is_active = 3;
-  ClientType type = 4;
-}
-
-enum ClientType {
-  UNKNOWN = 0;
-  CONFIDENTIAL = 1;
-  PUBLIC = 2;
-}
+message ValidateUserRequest { string username = 1; string password = 2; }
+message ValidateAuthCodeRequest { string authorization_code = 1; string client_id = 2; string redirect_uri = 3; }
+message ValidateAccessTokenRequest { string access_token = 1; }
 
 message ResolvedClientAuthorization {
   string client_id = 1;
-  repeated Scope scopes = 2;
-}
-
-message GetUserRequest { string username = 1; }
-
-message GetUserRolesRequest {
-  int32 user_id = 1;
-}
-
-message ValidateUserRequest {
-  string username = 1;
-  string password = 2;
-}
-
-message Role {
-  int32 id = 1;
-  string name = 2;
-  string reference_id = 3;
-  repeated string claims = 4;
-}
-
-message UserResponse {
-  int32 id = 1;
-  string username = 2;
-  string display_name = 3;
-  bool is_active = 4;
-  repeated Role roles = 5;
+  repeated ScopeResponse scopes = 2;
 }
 
 message ValidateUserResponse {
   bool success = 1;
   int32 user_id = 2;
-  repeated Role roles = 3;
+  repeated role.RoleResponse roles = 3;
   string error = 4;
 }
 
-message UserRolesResponse {
-  repeated Role roles = 1;
+message ValidateAuthCodeResponse 
+{
+  bool is_valid = 1; 
+  string user_id = 2; 
+  repeated ScopeResponse scopes = 3;
+}
+
+message ValidateAccessTokenResponse {
+  bool is_active = 1;
+  string subject = 2;
+  repeated ScopeResponse scopes = 3;
+  int64 expires_at = 4;
+}
+
+message ScopeResponse {
+  string name = 1;
+  string resource = 2;
 }

@@ -1,46 +1,26 @@
 syntax = "proto3";
 
+package client;
+
 option csharp_namespace = "PingChatApp.Common.Protos";
 option go_package = "github.com/PingChatApp/Common/out/pb";
 
-package client;
-
 service ClientDataService 
 {
-  rpc GetClientByRefId(GetClientByRefIdRequest) returns (ClientResponseDto);
-  rpc GetClientByClientId(GetClientByClientIdRequest) returns (ClientResponseDto);
-  rpc CreateClient(CreateClientRequest) returns (ClientResponseDto);
-  rpc UpdateClient(UpdateClientRequest) returns (ClientResponseDto);
-  rpc DeleteClient(DeleteClientRequest) returns (ClientResponseDto);
+  rpc GetClientByRefId(GetClientByRefIdRequest) returns (ClientResponse);
+  rpc GetClientByClientId(GetClientByClientIdRequest) returns (ClientResponse);
+  rpc CreateClient(CreateClientRequest) returns (ClientResponse);
+  rpc UpdateClient(UpdateClientRequest) returns (ClientResponse);
+  rpc DeleteClient(DeleteClientRequest) returns (ClientResponse);
 }
 
-message GetClientByRefIdRequest 
-{
-  string reference_id = 1;
-}
+message GetClientByRefIdRequest { string reference_id = 1; }
+message GetClientByClientIdRequest { string client_id = 1; }
+message CreateClientRequest { string name = 1; }
+message UpdateClientRequest { string reference_id = 1; string name = 2; }
+message DeleteClientRequest { string reference_id = 1; }
 
-message GetClientByClientIdRequest 
-{
-  string client_id = 1;
-}
-
-message CreateClientRequest 
-{
-  string name = 1;
-}
-
-message UpdateClientRequest
-{
-  string reference_id = 1;
-  string name = 2;
-}
-
-message DeleteClientRequest
-{
-  string reference_id = 1;
-}
-
-message ClientResponseDto 
+message ClientResponse
 {
   string id = 1;
   string client_id = 2;
@@ -48,4 +28,12 @@ message ClientResponseDto
   bool is_active = 4;
   string name = 5;
   string reference_id = 6;
+  ClientType type = 7;
 }
+
+enum ClientType {
+  UNKNOWN = 0;
+  CONFIDENTIAL = 1;
+  PUBLIC = 2;
+}
+

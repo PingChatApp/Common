@@ -1,29 +1,29 @@
 syntax = "proto3";
 
+package user;
+
+import "Protos/role.proto";
+
 option csharp_namespace = "PingChatApp.Common.Protos";
 option go_package = "github.com/PingChatApp/Common/out/pb";
 
-package user;
-
 service UserDataService 
 {
-  rpc GetUserByRefId(GetUserByRefIdRequest) returns (UserDto);
-  rpc GetUserByUsername(GetUserByUsernameRequest) returns (UserDto);
-  rpc CreateUser(CreateUserRequest) returns (UserDto);
-  rpc UpdateUser(UpdateUserRequest) returns (UserDto);
-  rpc DeleteUser(DeleteUserRequest) returns (UserDto);
+  rpc GetUserById(GetUserByIdRequest) returns (UserResponse);
+  rpc GetUserByRefId(GetUserByRefIdRequest) returns (UserResponse);
+  rpc GetUserByUsername(GetUserByUsernameRequest) returns (UserResponse);
+
+  rpc GetUserRoles(GetUserRolesRequest) returns (UserRolesResponse);
+
+  rpc CreateUser(CreateUserRequest) returns (UserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (UserResponse);
 }
 
-message GetUserByRefIdRequest 
-{
-  string reference_id = 1;
-}
-
-message GetUserByUsernameRequest 
-{
-  string username = 1;
-}
-
+message GetUserByIdRequest { string id = 1; }
+message GetUserByUsernameRequest { string username = 1; }
+message GetUserByRefIdRequest { string reference_id = 1; }
+message GetUserRolesRequest { int32 user_id = 1; }
 message CreateUserRequest 
 {
   string username = 1;
@@ -43,16 +43,18 @@ message UpdateUserRequest
   repeated string roles = 6;
 }
 
-message DeleteUserRequest
-{
-  string reference_id = 1;
+message DeleteUserRequest { string reference_id = 1; }
+
+message UserResponse {
+  int32 id = 1;
+  string username = 2;
+  string display_name = 3;
+  bool is_active = 4;
+  repeated role.RoleResponse roles = 5;
+  string email = 6;
 }
 
-message UserDto 
-{
-  string id = 1;
-  string username = 2;
-  string email = 3;
-  bool isActive = 4;
-  string name = 5;
+message UserRolesResponse 
+{ 
+  repeated role.RoleResponse roles = 1;
 }

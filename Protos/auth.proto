@@ -5,30 +5,39 @@ option go_package = "github.com/PingChatApp/Common/out/pb";
 
 package auth;
 
-message ApiScopeDto {
-    int32 id = 1;
-    string name = 2;
-}
-
-message ApiResourceDto {
-    int32 id = 1;
-    string name = 2;
-    repeated int32 scope_ids = 3;
-}
-
-message ClientDto {
-    int32 id = 1;
-    string client_id = 2;
-    repeated int32 allowed_scope_ids = 3;
-}
-
-message EmptyRequestDto {}
-message ApiScopesResponseDto { repeated ApiScopeDto scopes = 1; }
-message ApiResourcesResponseDto { repeated ApiResourceDto resources = 1; }
-message ClientsResponseDto { repeated ClientDto clients = 1; }
-
 service AuthDataService {
-    rpc GetApiScopes (EmptyRequestDto) returns (ApiScopesResponseDto);
-    rpc GetApiResources (EmptyRequestDto) returns (ApiResourcesResponseDto);
-    rpc GetClients (EmptyRequestDto) returns (ClientsResponseDto);
+    // client credentials flow
+    rpc GetClient(GetClientRequest) returns (ClientResponse);
+    rpc ResolveClientAuthorization(ResolveClientAuthRequest) returns (ResolvedClientAuthorization);
+
+    // password flow
+    rpc GetUserByUsername(GetUserRequest) returns (UserResponse);
+    rpc ValidateUserCredentials(ValidateUserRequest) returns (ValidateUserResponse);
+    rpc GetUserRoles(GetUserRolesRequest) returns (UserRolesResponse);
+}
+
+message GetClientRequest { string client_id = 1; }
+message ResolveClientAuthRequest { string client_id = 1; }
+
+message Scope {
+  string name = 1;
+  string resource = 2;
+}
+
+message ClientResponse {
+  string client_id = 1;
+  string client_secret_hash = 2;
+  bool is_active = 3;
+  ClientType type = 4;
+}
+
+enum ClientType {
+  UNKNOWN = 0;
+  CONFIDENTIAL = 1;
+  PUBLIC = 2;
+}
+
+message ResolvedClientAuthorization {
+  string client_id = 1;
+  repeated Scope scopes = 2;
 }

@@ -41,3 +41,40 @@ message ResolvedClientAuthorization {
   string client_id = 1;
   repeated Scope scopes = 2;
 }
+
+message GetUserRequest { string username = 1; }
+
+message GetUserRolesRequest {
+  int32 user_id = 1;
+}
+
+message ValidateUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message Role {
+  int32 id = 1;
+  string name = 2;
+  string reference_id = 3;
+  repeated string claims = 4;
+}
+
+message UserResponse {
+  int32 id = 1;
+  string username = 2;
+  string display_name = 3;
+  bool is_active = 4;
+  repeated Role roles = 5;
+}
+
+message ValidateUserResponse {
+  bool success = 1;
+  int32 user_id = 2;
+  repeated Role roles = 3;
+  string error = 4;
+}
+
+message UserRolesResponse {
+  repeated Role roles = 1;
+}
